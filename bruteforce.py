@@ -2,36 +2,19 @@ from openpyxl import Workbook
 from openpyxl import load_workbook
 
 PATH = "data.xlsx"
+CREDIT = 500
 
-class Action:
-    def __init__(self, name, cost, profit):
-        self.name = name
-        self.cost = cost
-        self.profit = profit
-
-def print_actions(actions):
-    for action in actions:
-        print(action.name, str(action.cost) + "€", str(action.profit) + "% sur 2 ans")
-
-def calcul_profit(actions):
+def get_data(path):
     """
-    Liste d'actions en entrée
-    Calcule et renvoi les benefices effectués sur 2 ans
+    Ouvre le fichier xlsx et renvoi une liste d'objets Action
     """
-    result = 0
-    for action in actions:
-        result += (action.cost / 100) * action.profit
-    return result
-
-
-if __name__ == '__main__':
-
     wb = load_workbook(filename = PATH)
     ws = wb.active
 
     actions = []
     number = 0
     for row in ws.iter_rows():
+        # On saute la ligne d'en tête
         if number > 0:
             name = row[0].value
             cost = row[1].value
@@ -39,5 +22,39 @@ if __name__ == '__main__':
             actions.append(Action(name, cost, profit))
 
         number += 1
-    print_actions(actions)
-    print(calcul_profit([actions[2]]))
+    return actions
+
+
+class Action:
+    def __init__(self, name, cost, profit):
+        self.name = name
+        # Conversion en centimes pour travailler avec des entiers
+        self.cost = int(cost * 100)
+        self.profit = profit
+
+    def __str__(self):
+        result = str(self.name) + " : " + str(self.cost / 100) + "€ "
+        result += str(self.profit) + "% sur 2 ans"
+        return result
+
+    @property
+    def benefice(self):
+        """
+        Calcule et renvoi les benefices effectués sur 2 ans
+        resultat en €
+        """
+        return int(self.cost * self.profit) / 100
+
+
+if __name__ == '__main__':
+    actions = get_data(PATH)
+
+    bank = int(CREDIT * 100)
+    purchase = []
+    for action in actions:
+        if bank >= action.cost:
+            purchase.append(action)
+            bank -= action.cost
+
+    for action in purchase:
+        print(action)
