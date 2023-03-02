@@ -1,8 +1,11 @@
 from openpyxl import Workbook
 from openpyxl import load_workbook
+from itertools import combinations
+
 
 PATH = "data.xlsx"
 CREDIT = 500
+
 
 def get_data(path):
     """
@@ -20,7 +23,6 @@ def get_data(path):
             cost = row[1].value
             profit = row[2].value
             actions.append(Action(name, cost, profit))
-
         number += 1
     return actions
 
@@ -46,15 +48,31 @@ class Action:
         return int(self.cost * self.profit) / 100
 
 
+
 if __name__ == '__main__':
     actions = get_data(PATH)
-
-    bank = int(CREDIT * 100)
-    purchase = []
-    for action in actions:
-        if bank >= action.cost:
-            purchase.append(action)
-            bank -= action.cost
-
-    for action in purchase:
-        print(action)
+    # Initialisation de range qui servira pour combinations
+    range = len(actions)
+    range -= 1
+    best_benef = 0
+    best_combinaison = None
+    best_cost = 0
+    while range > 1:
+        print("Range : " + str(range))
+        combinaisons = combinations(actions, range)
+        range -= 1
+        for combinaison in combinaisons:
+            benef_total = 0
+            cout_total = 0
+            for action in combinaison:
+                cout_total += action.cost / 100
+                benef_total += action.benefice
+            if cout_total <= CREDIT and benef_total > best_benef:
+                best_benef = benef_total
+                best_combinaison = combinaison
+                best_cost = cout_total
+    print("Meilleur résultat : ")
+    for e in best_combinaison:
+        print(e.name)
+    print("Cout total : " + str(best_cost))
+    print("Benefice total : " + str(best_benef))
