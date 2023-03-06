@@ -32,6 +32,7 @@ class Action:
         self.name = name
         # Conversion en centimes pour travailler avec des entiers
         self.cost = int(cost * 100)
+        # Valeur en %
         self.profit = profit
 
     def __str__(self):
@@ -45,7 +46,7 @@ class Action:
         Calcule et renvoi les benefices effectués sur 2 ans
         resultat en €
         """
-        return int(self.cost * self.profit) / 100
+        return int(self.cost * self.profit) // 100
 
 
 

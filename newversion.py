@@ -8,10 +8,10 @@ CREDIT = 500
 
 def chrono_decorator(function):
     def modified(*args,**kwargs):
-        a = datetime.now()
+        start = datetime.now()
         result = function(*args,**kwargs)
-        b = datetime.now()
-        print("exec time :" + str(b-a))
+        stop = datetime.now()
+        print("exec time :" + str(stop-start))
         return result
     return modified
 
@@ -53,27 +53,46 @@ class Action:
         Calcule et renvoi les benefices effectués sur 2 ans
         resultat en €
         """
-        return int(self.cost * self.profit) / 100
+        return int(self.cost * self.profit) // 100
+
+# @chrono_decorator
+# def main():
+#     actions = get_data(PATH)
+#     actions.sort(key=lambda x: x.profit,reverse=True)
+#     accumulated_costs = accumulate([a.cost for a in actions])
+#
+#     index_in_budget = -1
+#     budget = CREDIT * 100
+#     costs_in_bugdet = [cost for cost in accumulated_costs if cost <= budget]
+#     index_in_budget = len(costs_in_bugdet)
+#
+#     return actions[:index_in_budget]
 
 @chrono_decorator
-def main():
-    actions = get_data(PATH)
+def main(actions):
+    # On trie la liste de l'action la plus rentable à celle la moins rentable
+    # (profit)
+    result = []
     actions.sort(key=lambda x: x.profit,reverse=True)
-    accumulated_costs = accumulate([a.cost for a in actions])
 
-    index_in_budget = -1
     budget = CREDIT * 100
-    costs_in_bugdet = [cost for cost in accumulated_costs if cost <= budget]
-    index_in_budget = len(costs_in_bugdet)
+    cost = 0
+    for action in actions:
+        cost += action.cost
+        if cost > budget:
+            cost -= action.cost
+            continue
+        result.append(action)
 
-    return actions[:index_in_budget]
+    return result
 
 if __name__ == '__main__':
-    best_combinaison = main()
+    actions = get_data(PATH)
+    best_combinaison = main(actions)
     cout_total = 0
     benef_total = 0
     for e in best_combinaison:
-        print(e.name, e.cost / 100, e.benefice)
+        print(e.name, e.cost // 100, e.benefice)
         cout_total += e.cost
         benef_total += e.benefice
     print("Cout total : " + str(cout_total))
