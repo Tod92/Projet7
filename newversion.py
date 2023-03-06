@@ -1,6 +1,6 @@
 from openpyxl import Workbook
 from openpyxl import load_workbook
-from itertools import combinations
+from itertools import combinations, accumulate
 from datetime import datetime
 
 PATH = "data2.xlsx"
@@ -58,35 +58,23 @@ class Action:
 @chrono_decorator
 def main():
     actions = get_data(PATH)
-    # Initialisation de range qui servira pour combinations
-    range = len(actions) - 1
-    best_benef = 0
-    best_combinaison = None
-    best_cost = 0
-    while range > 1:
-        print("Range : " + str(range))
-        combinaisons = combinations(actions, range)
-        range -= 1
-        for combinaison in combinaisons:
-            benef_total = 0
-            cout_total = 0
-            for action in combinaison:
-                cout_total += action.cost / 100
-                benef_total += action.benefice
-            if cout_total <= CREDIT and benef_total > best_benef:
-                best_benef = benef_total
-                best_combinaison = combinaison
-                best_cost = cout_total
-    return best_combinaison, best_cost, best_benef
+    actions.sort(key=lambda x: x.profit,reverse=True)
+    accumulated_costs = accumulate([a.cost for a in actions])
 
+    index_in_budget = -1
+    budget = CREDIT * 100
+    costs_in_bugdet = [cost for cost in accumulated_costs if cost <= budget]
+    index_in_budget = len(costs_in_bugdet) - 1
+
+    return actions[:index_in_budget]
 
 if __name__ == '__main__':
-    best_combinaison, best_cost, best_benef = main()
-    if best_combinaison:
-        print("Meilleur résultat : ")
-        for e in best_combinaison:
-            print(e.name, e.cost / 100, e.benefice)
-        print("Cout total : " + str(best_cost))
-        print("Benefice total : " + str(round(best_benef)))
-    else:
-        print("Pas de résultat trouvé")
+    best_combinaison = main()
+    cout_total = 0
+    benef_total = 0
+    for e in best_combinaison:
+        print(e.name, e.cost / 100, e.benefice)
+        cout_total += e.cost
+        benef_total += e.benefice
+    print("Cout total : " + str(cout_total))
+    print("Benefice total : " + str(benef_total))
