@@ -64,7 +64,7 @@ def main():
     index_in_budget = -1
     budget = CREDIT * 100
     costs_in_bugdet = [cost for cost in accumulated_costs if cost <= budget]
-    index_in_budget = len(costs_in_bugdet) - 1
+    index_in_budget = len(costs_in_bugdet)
 
     return actions[:index_in_budget]
 
