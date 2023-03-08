@@ -9,18 +9,20 @@ CREDIT = 500
 @chrono_decorator
 def best_portfolio(budget, actions):
     """
-    budget en euros
-    actions : liste de tuples (nom, cout, profit sur 2 ans) en centimes
+    actions : liste de tuples (nom, cout, profit sur 2 ans)
+
     """
     # Initialisation de la matrice nbActions x budget (en euros)
+    print("hey")
     matrice = [[0 for y in range(budget + 1)] for x in range(len(actions) + 1)]
-
+    print("you")
     for a in range(1, len(actions) + 1):
-        for b in range(1, budget +1):
+        for b in range(1, budget + 1):
             # Si le cout de l'action est inferieur au budget en cours de
             # traitement dans la matrice
-            if actions[a-1][1] <= (b * 100):
-                matrice[a][b] = max(actions[a-1][2] + matrice[a-1][(b*100-actions[a-1][1])//100], matrice[a-1][b])
+            print(b)
+            if actions[a-1][1] <= b:
+                matrice[a][b] = max(actions[a-1][2] + matrice[a-1][(b-actions[a-1][1])], matrice[a-1][b])
             else:
                 matrice[a][b] = matrice[a-1][b]
 
@@ -51,4 +53,4 @@ def best_portfolio(budget, actions):
 
 if __name__ == '__main__':
     actions = getAndFormatData(PATH)
-    print(best_portfolio(500, actions))
+    print(best_portfolio(CREDIT * 100, actions))
