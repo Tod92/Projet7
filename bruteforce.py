@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from itertools import combinations
 
 
-PATH = "data.xlsx"
+PATH = "data\\actions.xlsx"
 CREDIT = 500
 
 
@@ -44,17 +44,17 @@ class Action:
     def benefice(self):
         """
         Calcule et renvoi les benefices effectués sur 2 ans
-        resultat en €
+        resultat en centimes
         """
-        return int(self.cost * self.profit) // 100
+        return int(self.cost * self.profit / 100)
 
 
 
 if __name__ == '__main__':
     actions = get_data(PATH)
+
     # Initialisation de range qui servira pour combinations
     range = len(actions)
-    range -= 1
     best_benef = 0
     best_combinaison = None
     best_cost = 0
@@ -66,14 +66,17 @@ if __name__ == '__main__':
             benef_total = 0
             cout_total = 0
             for action in combinaison:
-                cout_total += action.cost / 100
+                cout_total += action.cost
                 benef_total += action.benefice
-            if cout_total <= CREDIT and benef_total > best_benef:
+            if cout_total <= (CREDIT * 100) and benef_total > best_benef:
                 best_benef = benef_total
                 best_combinaison = combinaison
                 best_cost = cout_total
-    print("Meilleur résultat : ")
-    for e in best_combinaison:
-        print(e.name, e.cost / 100, e.benefice)
-    print("Cout total : " + str(best_cost))
-    print("Benefice total : " + str(best_benef))
+    if best_combinaison:
+        print("Meilleur résultat : ", best_combinaison)
+        for e in best_combinaison:
+            print(e.name, e.cost / 100, e.benefice / 100)
+        print("Cout total : " + str(best_cost / 100))
+        print("Benefice total : " + str(best_benef / 100))
+    else:
+        print("pas de combinaison trouvée")
