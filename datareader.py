@@ -1,11 +1,11 @@
 import csv
 
-def isNotNull(element):
+def isStrictPositive(element):
     """
-    Verifie que l'objet est un nombre et que ce dernier est non nul
+    Verifie que l'objet est un nombre et que ce dernier superieur à zero
     """
     try:
-        return float(element) != 0
+        return float(element) > 0
     except ValueError:
         return False
 
@@ -29,7 +29,7 @@ def getAndFormatData(path):
     with open(path,"r") as csvfile:
         reader = csv.reader(csvfile)
         # Retire l'en-tete et les actions ayant pour cout 0
-        actions = [tuple(e) for e in reader if isNotNull(e[1])]
+        actions = [tuple(e) for e in reader if isStrictPositive(e[1])]
         actions = list(map(toCents, actions))
     return actions
 
