@@ -1,8 +1,8 @@
 from datareader import getAndFormatData
 from decorator import chrono_decorator
 
-# PATH = "data\\dataset1.csv"
-PATH = "data\\dataset2.csv"
+PATH = "data\\dataset1.csv"
+# PATH = "data\\dataset2.csv"
 
 CREDIT = 500
 
@@ -28,7 +28,7 @@ def best_portfolio(budget, actions):
 def readable_best_portfolio(budget, actions):
 
     # Initialisation de la matrice nbActions x budget (en euros)
-    matrice = [[0 for y in range(budget + 1)] for x in range(len(actions) + 1)]
+    matrice = [[0 for x in range(budget + 1)] for y in range(len(actions) + 1)]
 
     for y in range(1, len(actions) + 1):
         for x in range(1, budget + 1):
@@ -41,20 +41,42 @@ def readable_best_portfolio(budget, actions):
             else:
                 matrice[y][x] = matrice[y-1][x]
 
-    return matrice[-1][-1]
+
+    best_profit = matrice[-1][-1]
+
+
+    # Construction de la liste des meilleurs actions en lisant la matrice
+    # dans le sens inverse
+    best_actions = []
+    x = budget
+    y = len(actions)
+
+    while x >= 0 and y >= 0:
+        action = actions[y-1]
+        actionCost = action[1]
+        actionProfit = action[2]
+        if matrice[y][x] == matrice[y-1][(x - actionCost)//100] + actionProfit:
+            best_actions.append(action)
+            # print("j'ai ajouté : ", action)
+            x -= actionCost // 100
+        y -= 1
+
+    return best_actions, best_profit
+
 
 
 
 if __name__ == '__main__':
+
     actions = getAndFormatData(PATH)
-    print("lancement avec ", len(actions), "actions")
-    print(readable_best_portfolio(CREDIT, actions))
-    actions2 = actions[:500]
-    print("lancement avec ", len(actions2), "actions")
-    print(best_portfolio(CREDIT, actions2))
-    actions3 = actions[:250]
-    print("lancement avec ", len(actions3), "actions")
-    print(best_portfolio(CREDIT, actions3))
-    actions4 = actions[:50]
-    print("lancement avec ", len(actions4), "actions")
-    print(best_portfolio(CREDIT, actions4))
+
+    print("lancement avec ", len(actions), "actions", "(" + PATH + ")")
+    best_actions, best_profit = readable_best_portfolio(CREDIT, actions)
+
+    cost = 0
+    print("Meilleure combinaison d'actions : ")
+    for action in best_actions:
+        print(action[0])
+        cost += action[1]
+    print("Coût total : ", cost / 100 , "€")
+    print("Bénéfice total : ", best_profit / 100, "€")
