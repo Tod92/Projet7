@@ -1,7 +1,7 @@
 from datareader import getAndFormatData
 from decorator import chrono_decorator
 
-PATH = "data\\dataset1.csv"
+PATH = "data\\dataset2.csv"
 # PATH = "data\\dataset2.csv"
 
 CREDIT = 500
@@ -23,7 +23,25 @@ def best_portfolio(budget, actions):
             else:
                 matrice[a][b] = matrice[a-1][b]
 
-    return matrice[-1][-1]
+    best_profit = matrice[-1][-1]
+
+    # Construction de la liste des meilleurs actions en lisant la matrice
+    # dans le sens inverse
+    best_actions = []
+    x = budget
+    y = len(actions)
+
+    while x >= 0 and y >= 0:
+        action = actions[y-1]
+        actionCost = action[1]
+        actionProfit = action[2]
+        if matrice[y][x] == matrice[y-1][(x - actionCost)//100] + actionProfit:
+            best_actions.append(action)
+            # print("j'ai ajouté : ", action)
+            x -= actionCost // 100
+        y -= 1
+
+    return best_actions, best_profit
 
 def readable_best_portfolio(budget, actions):
 
@@ -67,11 +85,13 @@ def readable_best_portfolio(budget, actions):
 
 
 if __name__ == '__main__':
-
+    # Ouvre le fichier csv et renvoi une liste d'actions sous forme de tuples
+    # (nom, prix, profit généré)
+    # Valeurs en centimes pour travailler avec des entiers
     actions = getAndFormatData(PATH)
 
     print("lancement avec ", len(actions), "actions", "(" + PATH + ")")
-    best_actions, best_profit = readable_best_portfolio(CREDIT, actions)
+    best_actions, best_profit = best_portfolio(CREDIT, actions)
 
     cost = 0
     print("Meilleure combinaison d'actions : ")

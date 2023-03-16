@@ -7,6 +7,30 @@ PATH = "data\\dataset0.csv"
 
 CREDIT = 500
 
+
+def best_portfolio_bruteforce(budget, actions, best_actions = []):
+    if actions:
+        # Cas où l'on ne selectionne pas l'action en cours
+        list0, profit0 = best_portfolio_bruteforce(budget, actions[1:], best_actions)
+        action = actions[0]
+        actionCost = action[1]
+        # Cas où l'on selectionne l'action en cours (le budget le permettant)
+        if actionCost <= budget:
+            budget1 = budget - actionCost
+            best_actions1 = best_actions + [action]
+            list1, profit1 = best_portfolio_bruteforce(budget1, actions[1:], best_actions1)
+            if profit1 > profit0:
+                return list1, profit1
+        return list0, profit0
+    else:
+        best_profit = sum([a[2] for a in best_actions])
+        return best_actions, best_profit
+
+
+
+
+
+
 def best_portfolio(budget, actions):
     """
     teste toutes les combinaisons possibles et renvoie la liste des actions la
@@ -35,13 +59,19 @@ def best_portfolio(budget, actions):
 
     return best_actions, best_profit
 
+@chrono_decorator
+def main(*args, **kwargs):
+    return best_portfolio_bruteforce(*args, **kwargs)
 
 if __name__ == '__main__':
-
+    # Ouvre le fichier csv et renvoi une liste d'actions sous forme de tuples
+    # (nom, prix, profit généré)
+    # Valeurs en centimes pour travailler avec des entiers
     actions = getAndFormatData(PATH)
 
     print("lancement avec ", len(actions), "actions", "(" + PATH + ")")
-    best_actions, best_profit = best_portfolio(CREDIT, actions)
+
+    best_actions, best_profit = main(CREDIT * 100, actions)
 
     cost = 0
     print("Meilleure combinaison d'actions : ")
