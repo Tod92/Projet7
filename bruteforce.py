@@ -30,7 +30,9 @@ def best_portfolio_bruteforce(budget, actions, best_actions = []):
 
 
 
-
+# Version avec itertools cominations : abandonnée car overlapping et import ne
+# permettant pas de visualiser l'intégralité de ce qui se passe
+@chrono_decorator
 def best_portfolio(budget, actions):
     """
     teste toutes les combinaisons possibles et renvoie la liste des actions la
@@ -70,8 +72,11 @@ if __name__ == '__main__':
     actions = getAndFormatData(PATH)
 
     print("lancement avec ", len(actions), "actions", "(" + PATH + ")")
-
+    # Lancement via la fonction main afin d'y affecter le décorateur chronometre
+    # sans qu'il s'execute à chaque réccurence de la fonction bruteforce
     best_actions, best_profit = main(CREDIT * 100, actions)
+
+    best_portfolio(CREDIT * 100, actions)
 
     cost = 0
     print("Meilleure combinaison d'actions : ")

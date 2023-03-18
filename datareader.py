@@ -26,7 +26,7 @@ def gen_income(tupleElement):
 def toCents(tupleElement):
     """
     Transforme le tuple reçu au format voulu (nom, cout, profit)
-    avec profit = benefice géné
+    avec profit = benefice généré
     """
     result = list(tupleElement)
     for i in range(1,3):

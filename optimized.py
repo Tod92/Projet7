@@ -1,7 +1,7 @@
 from datareader import getAndFormatData
 from decorator import chrono_decorator
 
-PATH = "data\\dataset2.csv"
+PATH = "data\\dataset0.csv"
 # PATH = "data\\dataset2.csv"
 
 CREDIT = 500
@@ -10,7 +10,9 @@ CREDIT = 500
 @chrono_decorator
 def best_portfolio(budget, actions):
     """
-    actions : liste de tuples (nom, cout, profit sur 2 ans)
+    actions : liste de tuples (nom, cout, profit sur 2 ans) valeurs en cents
+    budget : valeur en €
+    retourne best_actions, best_profit
     """
     # Initialisation de la matrice nbActions x budget (en euros)
     matrice = [[0 for y in range(budget + 1)] for x in range(len(actions) + 1)]
@@ -73,7 +75,7 @@ def readable_best_portfolio(budget, actions):
         action = actions[y-1]
         actionCost = action[1]
         actionProfit = action[2]
-        if matrice[y][x] == matrice[y-1][(x - actionCost)//100] + actionProfit:
+        if matrice[y][x] == matrice[y-1][(x * 100 - actionCost)//100] + actionProfit:
             best_actions.append(action)
             # print("j'ai ajouté : ", action)
             x -= actionCost // 100
