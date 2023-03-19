@@ -6,6 +6,7 @@ import csv
 # Profit généré par l'action sur 2 ans en %
 PATH = "data\\dataset0.csv"
 
+# Crédit en euros
 CREDIT = 500
 
 # Partie DATA
@@ -88,8 +89,10 @@ def getAndFormatData(path):
                    ("Action-20", 11400, 2052)]
     return actions
 
-#Partie Logique
+# Partie Logique
 
+# Version optimisée inspirée du "problème du sac à dos" via utilisation d'une
+# matrice
 def best_portfolio(budget, actions):
     """
     actions : liste de tuples (nom, cout, profit sur 2 ans) valeurs en cents
@@ -105,8 +108,8 @@ def best_portfolio(budget, actions):
             actionProfit = actions[a-1][2]
             # Si le cout de l'action est inferieur au budget en cours de
             # traitement dans la matrice
-            if actions[a-1][1] <= (b * 100):
-                matrice[a][b] = max(actionProfit + matrice[a-1][((b * 100)-actionCost)//100], matrice[a-1][b])
+            if actions[a-1][1] <= bInCents:
+                matrice[a][b] = max(actionProfit + matrice[a-1][(bInCents-actionCost)//100], matrice[a-1][b])
             else:
                 matrice[a][b] = matrice[a-1][b]
 
@@ -137,8 +140,10 @@ if __name__ == '__main__':
     actions = getAndFormatData(PATH)
     print("lancement avec ", len(actions), "actions")
 
+    # Appel de la fonction optimisée
     best_actions, best_profit = best_portfolio(CREDIT, actions)
 
+    # Affichage du résultat dans la console
     cost = 0
     print("Meilleure combinaison d'actions : ")
     for action in best_actions:

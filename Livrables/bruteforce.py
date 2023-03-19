@@ -7,6 +7,7 @@ import csv
 # Profit généré par l'action sur 2 ans en %
 PATH = "data\\dataset0.csv"
 
+# Crédit en euros
 CREDIT = 500
 
 # Partie DATA
@@ -35,8 +36,7 @@ def gen_income(tupleElement):
 
 def toCents(tupleElement):
     """
-    Transforme le tuple reçu au format voulu (nom, cout, profit)
-    avec profit = benefice généré
+    Transforme les cout et income en centimes et en entiers
     """
     result = list(tupleElement)
     for i in range(1,3):
@@ -90,14 +90,15 @@ def getAndFormatData(path):
                    ("Action-20", 11400, 2052)]
     return actions
 
-#Partie Logique
+# Partie Logique
 
 # Version avec itertools cominations : abandonnée car overlapping et import ne
 # permettant pas de visualiser l'intégralité de ce qui se passe
 def best_portfolio(budget, actions):
     """
-    teste toutes les combinaisons possibles et renvoie la liste des actions la
-    plus rentable dans le budget imparti ainsi que le bénéfice associé
+    actions : liste de tuples (nom, cout, profit sur 2 ans) valeurs en cents
+    budget : valeur en €
+    retourne best_actions, best_profit
     """
 
     range = len(actions)
@@ -117,6 +118,7 @@ def best_portfolio(budget, actions):
 
             if cost <= (budget * 100) and profit >= best_profit:
                 # Cas ou le profit est égal au meilleur profit trouvé précedement
+                # pour optimisation du coût
                 if profit == best_profit and cost > best_cost:
                     continue
                 else:
@@ -129,13 +131,15 @@ def best_portfolio(budget, actions):
 
 if __name__ == '__main__':
     # Ouvre le fichier csv et renvoi une liste d'actions sous forme de tuples
-    # (nom, prix, profit généré)
+    # (nom, prix, profit généré) ou la liste par défaut si fichier non trouvé
     # Valeurs en centimes pour travailler avec des entiers
     actions = getAndFormatData(PATH)
     print("lancement avec ", len(actions), "actions")
 
+    # Appel de la fonction brute force
     best_actions, best_profit = best_portfolio(CREDIT, actions)
 
+    # Affichage du résultat dans la console
     cost = 0
     print("Meilleure combinaison d'actions : ")
     for action in best_actions:
